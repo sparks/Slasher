@@ -34,34 +34,59 @@ public class Slasher extends Activity {
 
 		// Set up an instance of SystemUiHider to control the system UI for
 		// this activity.
-		mSystemUiHider = SystemUiHider.getInstance(this, container, SystemUiHider.FLAG_HIDE_NAVIGATION);
-		mSystemUiHider.setup();
-		mSystemUiHider
-				.setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
-					@Override
-					@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-					public void onVisibilityChange(boolean visible) {
-					}
-				});
+		// mSystemUiHider = SystemUiHider.getInstance(this, container, SystemUiHider.FLAG_HIDE_NAVIGATION);
+		// mSystemUiHider.setup();
+		// mSystemUiHider.setOnVisibilityChangeListener(
+		// 	new SystemUiHider.OnVisibilityChangeListener() {
+		// 		@Override
+		// 		@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+		// 		public void onVisibilityChange(boolean visible) {
+		// 		}
+		// 	}
+		// );
 
-		container.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				mSystemUiHider.toggle();
-				// mSystemUiHider.show();
-			}
-		});
+		// container.setOnClickListener(
+		// 	new View.OnClickListener() {
+		// 		@Override
+		// 		public void onClick(View view) {
+		// 			mSystemUiHider.toggle();
+		// 			// mSystemUiHider.show();
+		// 		}
+		// 	}
+		// );
+	}
+
+	// @Override
+	// protected void onPostCreate(Bundle savedInstanceState) {
+	// 	super.onPostCreate(savedInstanceState);
+
+	// 	// Trigger the initial hide() shortly after the activity has been
+	// 	// created, to briefly hint to the user that UI controls
+	// 	// are available.
+	// 	delayedHide(100);
+	// }
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// delayedHide(100);
 	}
 
 	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-
-		// Trigger the initial hide() shortly after the activity has been
-		// created, to briefly hint to the user that UI controls
-		// are available.
-		delayedHide(100);
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus) {
+			getWindow().getDecorView().setSystemUiVisibility(
+				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+				| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+				| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_FULLSCREEN
+				| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+			);
+		}
 	}
+
 
 	Handler mHideHandler = new Handler();
 	Runnable mHideRunnable = new Runnable() {

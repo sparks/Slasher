@@ -49,13 +49,18 @@
 	<FrameLayout 
 		android:id="@+id/slasher_container"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_height="match_parent"
+		android:background="@android:color/white">
 
 		<com.minimanimals.slasher.PlaySurface
 			android:id="@+id/game_ui"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:keepScreenOn="true"
+			android:paddingTop="40dp"
+			android:paddingBottom="60dp"
+			android:paddingLeft="25dp"
+			android:paddingRight="25dp"
 			android:gravity="center"/>
 
 	</FrameLayout>

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.Window;
 
 /**
  * An API 11+ implementation of {@link SystemUiHider}. Uses APIs available in
@@ -109,6 +110,7 @@ public class SystemUiHiderHoneycomb extends SystemUiHiderBase {
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
 					// Pre-Jelly Bean, we must manually hide the action bar
 					// and use the old window flags API.
+					mActivity.getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 					mActivity.getActionBar().hide();
 					mActivity.getWindow().setFlags(
 							WindowManager.LayoutParams.FLAG_FULLSCREEN,
