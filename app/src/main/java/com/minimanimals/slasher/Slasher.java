@@ -87,7 +87,6 @@ public class Slasher extends Activity {
 		}
 	}
 
-
 	Handler mHideHandler = new Handler();
 	Runnable mHideRunnable = new Runnable() {
 		@Override
