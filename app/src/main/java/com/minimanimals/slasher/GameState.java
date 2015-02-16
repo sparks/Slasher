@@ -45,19 +45,19 @@ public class GameState {
 			public Iterator<ElementState> iterator() {
 				return new Iterator<ElementState>() {
 
-					int i, j;
+					int i = 0, j = -1;
 
 					public boolean hasNext() {
 						return !(i == numCols() - 1 && j == numRows() - 1);
 					}
 
 					public ElementState next() {
-						ElementState nextState = mElementStates[i][j];
 						j++;
 						if (j == numRows()) {
 							i++;
 							j = 0;
 						}
+						ElementState nextState = mElementStates[i][j];
 						return nextState;
 					}
 
