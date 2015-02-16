@@ -8,7 +8,7 @@ public class SlashElementRenderer implements ElementRenderer {
 
 	static final float mPaddingFrac = 0.125f;
 
-	static final int[] mSlashColors = new int[] {
+	static final int[] mColors = new int[] {
 		0xff3959a8,
 		0xff07b68e,
 		0xffa7cf3b,
@@ -19,16 +19,16 @@ public class SlashElementRenderer implements ElementRenderer {
 
 	public void render(Canvas canvas, int variation, boolean fade, int left, int top, int right, int bottom) {
 		boolean direction = (variation % 2) == 0;
-		int slashColorIndex = variation / 2;
+		int colorIndex = variation / 2;
 
 		int width = right - left;
 		int height = bottom - top;
 
-		Paint slashPaint = new Paint();
-		slashPaint.setStyle(Paint.Style.STROKE);
-		slashPaint.setStrokeWidth(0.1f * width);
-		slashPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-		slashPaint.setColor(mSlashColors[slashColorIndex]);
+		Paint paint = new Paint();
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeWidth(0.1f * width);
+		paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+		paint.setColor(mColors[colorIndex]);
 
 		if (direction) {
 			canvas.drawLine(
@@ -36,7 +36,7 @@ public class SlashElementRenderer implements ElementRenderer {
 				top + height * mPaddingFrac,
 				right - width * mPaddingFrac,
 				bottom - height * mPaddingFrac,
-				slashPaint
+				paint
 			);
 		} else {
 			canvas.drawLine(
@@ -44,7 +44,7 @@ public class SlashElementRenderer implements ElementRenderer {
 				bottom - height * mPaddingFrac,
 				right - width * mPaddingFrac,
 				top + height * mPaddingFrac,
-				slashPaint
+				paint
 			);
 		}
 	}

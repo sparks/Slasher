@@ -16,9 +16,10 @@ public class Slasher extends Activity {
 		View container = findViewById(R.id.slasher_container);
 
 		ElementRenderer elementRenderer = new SlashElementRenderer();
+		// ElementRenderer elementRenderer = new DotElementRenderer();
 
 		PlaySurface playSurface = (PlaySurface)findViewById(R.id.play_surface);
-		playSurface.init(6, 10, 8, elementRenderer);
+		playSurface.init(6, 10, 4, elementRenderer);
 	}
 
 	@Override
