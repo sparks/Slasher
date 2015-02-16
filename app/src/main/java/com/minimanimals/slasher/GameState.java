@@ -2,6 +2,7 @@ package com.minimanimals.slasher;
 
 import java.util.Random;
 import java.util.Iterator;
+import android.util.Log;
 
 public class GameState {
 
@@ -10,6 +11,9 @@ public class GameState {
 	ElementRenderer mElementRenderer;
 
 	ElementState[][] mElementStates;
+
+	GamePoint mStartStrokePoint;
+	GamePoint mEndStrokePoint;
 
 	public GameState(int cols, int rows, ElementRenderer elementRenderer) {
 		mRandom = new Random();
@@ -21,15 +25,15 @@ public class GameState {
 	}
 
 	public void randomizeState() {
-		for (int i = 0; i < mElementStates.length; i++) {
-			for (int j = 0; j < mElementStates[i].length; j++) {
-				mElementStates[i][j] = new ElementState(i, j, (int)(mRandom.nextDouble() * mElementRenderer.numVariations()), false);
+		for (int x = 0; x < mElementStates.length; x++) {
+			for (int y = 0; y < mElementStates[x].length; y++) {
+				mElementStates[x][y] = new ElementState(x, y, (int)(mRandom.nextDouble() * mElementRenderer.numVariations()), false);
 			}
 		}
 	}
 
-	public ElementState getElementState(int i, int j) {
-		return mElementStates[i][j];
+	public ElementState getElementState(int x, int y) {
+		return mElementStates[x][y];
 	}
 
 	public int numCols() {
@@ -45,19 +49,19 @@ public class GameState {
 			public Iterator<ElementState> iterator() {
 				return new Iterator<ElementState>() {
 
-					int i = 0, j = -1;
+					int x = 0, y = -1;
 
 					public boolean hasNext() {
-						return !(i == numCols() - 1 && j == numRows() - 1);
+						return !(x == numCols() - 1 && y == numRows() - 1);
 					}
 
 					public ElementState next() {
-						j++;
-						if (j == numRows()) {
-							i++;
-							j = 0;
+						y++;
+						if (y == numRows()) {
+							x++;
+							y = 0;
 						}
-						ElementState nextState = mElementStates[i][j];
+						ElementState nextState = mElementStates[x][y];
 						return nextState;
 					}
 
@@ -68,6 +72,80 @@ public class GameState {
 				};
 			}
 		};
+	}
+
+	private int constrainX(int x) {
+		return Math.min(Math.max(0, x), numCols());
+	}
+
+	private	int constrainY(int y) {
+		return Math.min(Math.max(0, y), numRows());
+	}
+
+	private void setFaded(boolean faded) {
+		for (ElementState state : iterElementStates()) {
+			state.setFaded(faded);
+		}
+	}
+
+	public void setStartStrokePoint(GamePoint point) {
+		if (mStartStrokePoint != null && point == null) setFaded(false);
+		mStartStrokePoint = point;
+	}
+
+	public void setEndStrokePoint(GamePoint point) {
+		mEndStrokePoint = point;
+		if (mStartStrokePoint == null || mEndStrokePoint == null) return;
+
+		setFaded(true);
+
+		if (mStartStrokePoint.getY() == mEndStrokePoint.getY()) {
+			int yPivot = constrainY((int)mStartStrokePoint.getY());
+
+			int startX = constrainX((int)mStartStrokePoint.getX());
+			int endX = constrainX((int)mEndStrokePoint.getX());
+
+			for (int x = Math.min(startX, endX); x < Math.max(startX, endX); x++) {
+				for (int y = 0; y < yPivot; y++) {
+					if (yPivot+y >= numRows() || yPivot-y-1 < 0) break;
+
+					ElementState above = mElementStates[x][yPivot+y];
+					ElementState below = mElementStates[x][yPivot-y-1];
+
+					if (mElementRenderer.isSymmetric(above.getVariation(), below.getVariation(), true)) {
+						above.setFaded(false);
+						below.setFaded(false);
+					}
+				}
+			}
+		} else if (mStartStrokePoint.getX() == mEndStrokePoint.getX()) {
+			int xPivot = constrainX((int)mStartStrokePoint.getX());
+
+			int startY = constrainY((int)mStartStrokePoint.getY());
+			int endY = constrainY((int)mEndStrokePoint.getY());
+
+			for (int y = Math.min(startY, endY); y < Math.max(startY, endY); y++) {
+				for (int x = 0; x < xPivot; x++) {
+					if (xPivot+x >= numCols() || xPivot-x-1 < 0) break;
+
+					ElementState above = mElementStates[xPivot+x][y];
+					ElementState below = mElementStates[xPivot-x-1][y];
+
+					if (mElementRenderer.isSymmetric(above.getVariation(), below.getVariation(), true)) {
+						above.setFaded(false);
+						below.setFaded(false);
+					}
+				}
+			}
+		}
+	}
+
+	public GamePoint getStartStrokePoint() {
+		return mStartStrokePoint;
+	}
+
+	public GamePoint getEndStrokePoint() {
+		return mEndStrokePoint;
 	}
 
 }

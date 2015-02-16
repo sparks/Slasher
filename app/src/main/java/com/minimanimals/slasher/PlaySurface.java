@@ -19,9 +19,6 @@ public class PlaySurface extends View {
 	float mColSize;
 	float mRowSize;
 
-	GamePoint mStartStrokePoint;
-	GamePoint mEndStrokePoint;
-
 	GameState mGameState;
 
 	public PlaySurface(Context context, AttributeSet attrs) {
@@ -83,7 +80,7 @@ public class PlaySurface extends View {
 	}
 
 	void drawStrokeUI(Canvas canvas) {
-		if (mStartStrokePoint != null) {
+		if (mGameState.getStartStrokePoint() != null && mGameState.getEndStrokePoint() != null) {
 			int baseColor = 0xff414141;
 
 			Paint linePaint = new Paint();
@@ -93,31 +90,31 @@ public class PlaySurface extends View {
 			linePaint.setColor(baseColor);
 
 			canvas.drawLine(
-				gamePointToScreenX(mStartStrokePoint),
-				gamePointToScreenY(mStartStrokePoint),
-				gamePointToScreenX(mEndStrokePoint),
-				gamePointToScreenY(mEndStrokePoint),
+				gamePointToScreenX(mGameState.getStartStrokePoint()),
+				gamePointToScreenY(mGameState.getStartStrokePoint()),
+				gamePointToScreenX(mGameState.getEndStrokePoint()),
+				gamePointToScreenY(mGameState.getEndStrokePoint()),
 				linePaint
 			);
 
 			canvas.drawCircle(
-				gamePointToScreenX(mStartStrokePoint),
-				gamePointToScreenY(mStartStrokePoint),
+				gamePointToScreenX(mGameState.getStartStrokePoint()),
+				gamePointToScreenY(mGameState.getStartStrokePoint()),
 				px(5),
 				linePaint
 			);
 
 			canvas.drawCircle(
-				gamePointToScreenX(mEndStrokePoint),
-				gamePointToScreenY(mEndStrokePoint),
+				gamePointToScreenX(mGameState.getEndStrokePoint()),
+				gamePointToScreenY(mGameState.getEndStrokePoint()),
 				px(5),
 				linePaint
 			);
 			linePaint.setColor(ColorUtil.applyAlpha(baseColor, 0x60));
 			for (int i = 0; i < 3; i++) {
 				canvas.drawCircle(
-					gamePointToScreenX(mEndStrokePoint),
-					gamePointToScreenY(mEndStrokePoint),
+					gamePointToScreenX(mGameState.getEndStrokePoint()),
+					gamePointToScreenY(mGameState.getEndStrokePoint()),
 					px(5 * (3 - i)),
 					linePaint
 				);
@@ -132,22 +129,23 @@ public class PlaySurface extends View {
 
 		switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN: {
-				mStartStrokePoint = point;
-				mEndStrokePoint = point;
+				mGameState.setStartStrokePoint(point);
+				mGameState.setEndStrokePoint(point);
 				invalidate();
 				break;
 			}
 			case MotionEvent.ACTION_MOVE: {
-				point.snapOrtho(mStartStrokePoint);
-				if (!point.equals(mEndStrokePoint)) {
-					mEndStrokePoint = point;
+				point.snapOrtho(mGameState.getStartStrokePoint());
+				if (!point.equals(mGameState.getEndStrokePoint())) {
+					mGameState.setEndStrokePoint(point);
 					invalidate();
 				}
 				break;
 			}
 			case MotionEvent.ACTION_CANCEL:
 			case MotionEvent.ACTION_UP: {
-				mStartStrokePoint = null;
+				mGameState.setStartStrokePoint(null);
+				mGameState.setEndStrokePoint(null);
 				invalidate();
 				break;
 			}

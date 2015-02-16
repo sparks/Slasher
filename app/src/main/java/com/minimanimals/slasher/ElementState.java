@@ -27,6 +27,10 @@ public class ElementState {
 		return mFaded;
 	}
 
+	public void setFaded(boolean faded) {
+		mFaded = faded;
+	}
+
 	public int getVariation() {
 		return mVariation;
 	}
