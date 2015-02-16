@@ -3,6 +3,7 @@ package com.minimanimals.slasher;
 import android.graphics.Paint;
 import android.graphics.Canvas;
 import android.content.Context;
+import com.minimanimal.slasher.util.ColorUtil;
 
 public class DotElementRenderer implements ElementRenderer {
 
@@ -28,13 +29,16 @@ public class DotElementRenderer implements ElementRenderer {
 	public void render(Canvas canvas, int variation, boolean faded, int left, int top, int right, int bottom) {
 		int colorIndex = variation;
 
+		int color = mColors[colorIndex];
+		if (faded) color = ColorUtil.desaturate(color, 0.1f);
+
 		int width = right - left;
 		int height = bottom - top;
 
 		Paint paint = new Paint();
 		paint.setStyle(Paint.Style.FILL);
 		paint.setFlags(Paint.ANTI_ALIAS_FLAG);
-		paint.setColor(mColors[colorIndex]);
+		paint.setColor(color);
 
 		canvas.drawCircle(
 			left + width / 2,
