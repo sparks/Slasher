@@ -16,18 +16,13 @@ public class PlaySurface extends View {
 
 	ElementRenderer mElementRenderer;
 
-	int mNumCols;
-	int mNumRows;
-
-	int mVariations;
-
 	float mColSize;
 	float mRowSize;
 
 	GamePoint mStartStrokePoint;
 	GamePoint mEndStrokePoint;
 
-	Random mRandom;
+	GameState mGameState;
 
 	public PlaySurface(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -37,15 +32,10 @@ public class PlaySurface extends View {
 		super(context);
 	}
 
-	public void init(int cols, int rows, int variations, ElementRenderer elementRenderer) {
-		mNumCols = cols;
-		mNumRows = rows;
-
-		mVariations = variations;
+	public void init(GameState gameState, ElementRenderer elementRenderer) {
+		mGameState = gameState;
 
 		mElementRenderer = elementRenderer;
-
-		mRandom = new Random();
 	}
 
 	@Override
@@ -55,14 +45,15 @@ public class PlaySurface extends View {
 
 	@Override
 	protected void onSizeChanged(int newWidth, int newHeight, int oldWidth, int oldHeight) {
-		mColSize = (newWidth - getPaddingLeft() - getPaddingRight()) / mNumCols;
-		mRowSize = (newHeight - getPaddingTop() - getPaddingBottom()) / mNumRows;
+		mColSize = (newWidth - getPaddingLeft() - getPaddingRight()) / mGameState.numCols();
+		mRowSize = (newHeight - getPaddingTop() - getPaddingBottom()) / mGameState.numRows();
 	}
 
 	private float px(float dp) {
 		return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
 	}
 
+	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 
@@ -70,19 +61,18 @@ public class PlaySurface extends View {
 
 		drawElements(canvas);
 		drawStrokeUI(canvas);
-
 	}
 
 	void drawElements(Canvas canvas) {
 		if (mElementRenderer != null) {
-			for (int i = 0; i < mNumCols; i++) {
-				for (int j = 0; j < mNumRows; j++) {
+			for (int i = 0; i < mGameState.numCols(); i++) {
+				for (int j = 0; j < mGameState.numRows(); j++) {
 					GamePoint topLeftPoint = new GamePoint(i, j);
 					GamePoint bottomRightPoint = new GamePoint(i+1, j+1);
 
 					mElementRenderer.render(
 						canvas,
-						(int)(mRandom.nextDouble() * mVariations),
+						mGameState.getElementState(i, j),
 						false,
 						topLeftPoint.getScreenX(),
 						topLeftPoint.getScreenY(),
