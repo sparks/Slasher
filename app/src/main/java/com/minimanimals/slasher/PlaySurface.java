@@ -9,15 +9,25 @@ import android.view.View;
 import android.view.MotionEvent;
 import android.graphics.Color;
 import android.util.Log;
+import com.minimanimal.slasher.util.ColorUtil;
 import java.util.Random;
 
 public class PlaySurface extends View {
 
-	int mStartX = -1;
-	int mStartY = -1;
+	ElementRenderer mElementRenderer;
 
-	int mEndX;
-	int mEndY;
+	int mNumCols;
+	int mNumRows;
+
+	int mVariations;
+
+	float mColSize;
+	float mRowSize;
+
+	GamePoint mStartStrokePoint;
+	GamePoint mEndStrokePoint;
+
+	Random mRandom;
 
 	public PlaySurface(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -27,18 +37,26 @@ public class PlaySurface extends View {
 		super(context);
 	}
 
+	public void init(int cols, int rows, int variations, ElementRenderer elementRenderer) {
+		mNumCols = cols;
+		mNumRows = rows;
+
+		mVariations = variations;
+
+		mElementRenderer = elementRenderer;
+
+		mRandom = new Random();
+	}
+
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		// Try for a width based on our minimum
-		// int minw = getPaddingLeft() + getPaddingRight() + getSuggestedMinimumWidth();
-		// int w = resolveSizeAndState(minw, widthMeasureSpec, 1);
-
-		// Whatever the width ends up being, ask for a height that would let the pie
-		// get as big as it can
-		// int minh = MeasureSpec.getSize(w) - (int)mTextWidth + getPaddingBottom() + getPaddingTop();
-		// int h = resolveSizeAndState(MeasureSpec.getSize(w) - (int)mTextWidth, heightMeasureSpec, 0);
-
 		setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
+	}
+
+	@Override
+	protected void onSizeChanged(int newWidth, int newHeight, int oldWidth, int oldHeight) {
+		mColSize = (newWidth - getPaddingLeft() - getPaddingRight()) / mNumCols;
+		mRowSize = (newHeight - getPaddingTop() - getPaddingBottom()) / mNumRows;
 	}
 
 	private float px(float dp) {
@@ -50,161 +68,163 @@ public class PlaySurface extends View {
 
 		if (getWidth() == 0 || getHeight() == 0) return;
 
-		int[] colors = new int[] {
-			0xff3959a8,
-			0xff07b68e,
-			0xffa7cf3b,
-			0xffed1976
-		};
+		drawElements(canvas);
+		drawStrokeUI(canvas);
 
-		int numCols = 6;
-		int numRows = 10;
+	}
 
-		float colSize = (getWidth() - getPaddingLeft() - getPaddingRight()) / numCols;
-		float rowSize = (getHeight() - getPaddingTop() - getPaddingBottom()) / numRows;
+	void drawElements(Canvas canvas) {
+		if (mElementRenderer != null) {
+			for (int i = 0; i < mNumCols; i++) {
+				for (int j = 0; j < mNumRows; j++) {
+					GamePoint topLeftPoint = new GamePoint(i, j);
+					GamePoint bottomRightPoint = new GamePoint(i+1, j+1);
 
-		Paint slashPaint = new Paint();
-		slashPaint.setStyle(Paint.Style.STROKE);
-		slashPaint.setStrokeWidth(px(6));
-		slashPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-
-		float paddingFrac = 0.125f;
-
-		Random random = new Random(123);
-
-		for (int i = 0; i < numCols; i++) {
-			for (int j = 0; j < numRows; j++) {
-				boolean direction = random.nextDouble() > 0.5f;
-				slashPaint.setColor(colors[(int)(random.nextDouble() * colors.length)]);
-				if (direction) {
-					canvas.drawLine(
-						getPaddingLeft() + colSize * (i + paddingFrac),
-						getPaddingTop() + rowSize * (j + paddingFrac),
-						getPaddingLeft() + colSize * (i + (1 - paddingFrac)),
-						getPaddingTop() + rowSize * (j + (1 - paddingFrac)),
-						slashPaint
-					);
-				} else {
-					canvas.drawLine(
-						getPaddingLeft() + colSize * (i + paddingFrac),
-						getPaddingTop() + rowSize * (j + (1 - paddingFrac)),
-						getPaddingLeft() + colSize * (i + (1 - paddingFrac)),
-						getPaddingTop() + rowSize * (j + paddingFrac),
-						slashPaint
+					mElementRenderer.render(
+						canvas,
+						(int)(mRandom.nextDouble() * mVariations),
+						false,
+						topLeftPoint.getScreenX(),
+						topLeftPoint.getScreenY(),
+						bottomRightPoint.getScreenX(),
+						bottomRightPoint.getScreenY()
 					);
 				}
-				// canvas.drawRect(
-				// 	getPaddingLeft() + colSize * (i + 0.1f),
-				// 	getPaddingTop() + rowSize * (j + 0.1f),
-				// 	getPaddingLeft() + colSize * (i + 0.9f),
-				// 	getPaddingTop() + rowSize * (j + 0.9f),
-				// 	paint
-				// );
 			}
 		}
+	}
 
-		if (mStartX != -1 && mStartY != -1) {
+	void drawStrokeUI(Canvas canvas) {
+		if (mStartStrokePoint != null) {
+			int baseColor = 0xff414141;
+
 			Paint linePaint = new Paint();
 			linePaint.setStyle(Paint.Style.FILL_AND_STROKE);
 			linePaint.setStrokeWidth(px(3));
 			linePaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-			linePaint.setColor(0xff414141);
+			linePaint.setColor(baseColor);
 
 			canvas.drawLine(
-				getPaddingLeft() + colSize * mStartX,
-				getPaddingTop() + rowSize * mStartY,
-				getPaddingLeft() + colSize * mEndX,
-				getPaddingTop() + rowSize * mEndY,
+				mStartStrokePoint.getScreenX(),
+				mStartStrokePoint.getScreenY(),
+				mEndStrokePoint.getScreenX(),
+				mEndStrokePoint.getScreenY(),
 				linePaint
 			);
 			canvas.drawCircle(
-				getPaddingLeft() + colSize * mStartX,
-				getPaddingTop() + rowSize * mStartY,
+				mStartStrokePoint.getScreenX(),
+				mStartStrokePoint.getScreenY(),
 				px(5),
 				linePaint
 			);
 
-			int baseColor = 0xff414141;
-
-			linePaint.setColor(applyAlpha(baseColor, 0x60));
-			canvas.drawCircle(
-				getPaddingLeft() + colSize * mEndX,
-				getPaddingTop() + rowSize * mEndY,
-				px(15),
-				linePaint
-			);
-
-			linePaint.setColor(applyAlpha(baseColor, 0x60));
-			canvas.drawCircle(
-				getPaddingLeft() + colSize * mEndX,
-				getPaddingTop() + rowSize * mEndY,
-				px(10),
-				linePaint
-			);
-
-
-			linePaint.setColor(applyAlpha(baseColor, 0x60));
-			canvas.drawCircle(
-				getPaddingLeft() + colSize * mEndX,
-				getPaddingTop() + rowSize * mEndY,
-				px(5),
-				linePaint
-			);
+			linePaint.setColor(ColorUtil.applyAlpha(baseColor, 0x60));
+			for (int i = 0; i < 3; i++) {
+				canvas.drawCircle(
+					mEndStrokePoint.getScreenX(),
+					mEndStrokePoint.getScreenY(),
+					px(5 * (3 - i)),
+					linePaint
+				);
+			}
 		}
 	}
 
-	int applyAlpha(int color, int alpha) {
-		int currentAlpha = ((color & 0xFF000000) >> 24) & 0xFF;
-		int adjAlpha = (int)(currentAlpha * alpha);
-		return (adjAlpha << 24) | (color & 0x00FFFFFF);
-	}
-
-
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		int touchX = (int)event.getX();
-		int touchY = (int)event.getY();
-
-		int numCols = 6;
-		int numRows = 10;
-
-		float colSize = (getWidth() - getPaddingLeft() - getPaddingRight()) / numCols;
-		float rowSize = (getHeight() - getPaddingTop() - getPaddingBottom()) / numRows;
+		GamePoint point = gamePointfromMotionEvent(event);
+		point.snapToGrid();
 
 		switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN: {
-				mStartX = Math.round((float)(touchX - getPaddingLeft()) / colSize);
-				mStartY = Math.round((float)(touchY - getPaddingTop()) / rowSize);
-				mEndX = mStartX;
-				mEndY = mStartY;
+				mStartStrokePoint = point;
+				mEndStrokePoint = point;
+				invalidate();
 				break;
 			}
 			case MotionEvent.ACTION_MOVE: {
-				mEndX = Math.round((float)(touchX - getPaddingLeft()) / colSize);
-				mEndY = Math.round((float)(touchY - getPaddingTop()) / rowSize);
+				point.snapOrtho(mStartStrokePoint);
+				if (!point.equals(mEndStrokePoint)) {
+					mEndStrokePoint = point;
+					invalidate();
+				}
 				break;
 			}
+			case MotionEvent.ACTION_CANCEL:
 			case MotionEvent.ACTION_UP: {
-				mStartX = -1;
-				mStartY = -1;
-
-				// drawCanvas.drawPath(drawPath, drawPaint);
-				// drawPath.reset();
+				mStartStrokePoint = null;
+				invalidate();
 				break;
 			}
-			case MotionEvent.ACTION_CANCEL: {
-				// drawPath.lineTo(touchX, touchY);
-				break;
-			}
-
 			default: {
 				return false;
 			}
 		}
 
-		invalidate();
 		return true;
 	}
 
+	private GamePoint gamePointfromScreenCoord(float x, float y) {
+		x = (x - getPaddingLeft()) / mColSize;
+		y = (y - getPaddingTop()) / mRowSize;
+
+		return new GamePoint(x, y);
+	}
+
+	private GamePoint gamePointfromMotionEvent(MotionEvent event) {
+		return gamePointfromScreenCoord(event.getX(), event.getY());
+	}
+
+	class GamePoint {
+		float x, y;
+
+		GamePoint(GamePoint point) {
+			this.x = point.x;
+			this.y = point.y;
+		}
+
+		private GamePoint(float x, float y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		float getGameX() {
+			return x;
+		}
+
+		float getGameY() {
+			return y;
+		}
+
+		int getScreenX() {
+			return (int)((mColSize * x) + getPaddingLeft());
+		}
+
+		int getScreenY() {
+			return (int)((mRowSize * y) + getPaddingTop());
+		}
+
+		void snapToGrid() {
+			x = Math.round(x);
+			y = Math.round(y);
+		}
+
+		void snapOrtho(GamePoint reference) {
+			float xDiff = Math.abs(reference.x - this.x);
+			float yDiff = Math.abs(reference.y - this.y);
+
+			if (xDiff > yDiff) this.y = reference.y;
+			else this.x = reference.x;
+		}
+
+		public boolean equals(Object o) {
+			if (o instanceof GamePoint) {
+				GamePoint p = (GamePoint)o;
+				if (this.x == p.x && this.y == p.y) return true;
+			}
+			return false;
+		}
+
+	}
 
 }
