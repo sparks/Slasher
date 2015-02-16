@@ -65,21 +65,19 @@ public class PlaySurface extends View {
 
 	void drawElements(Canvas canvas) {
 		if (mElementRenderer != null) {
-			for (int i = 0; i < mGameState.numCols(); i++) {
-				for (int j = 0; j < mGameState.numRows(); j++) {
-					GamePoint topLeftPoint = new GamePoint(i, j);
-					GamePoint bottomRightPoint = new GamePoint(i+1, j+1);
+			for (ElementState state : mGameState.iterElementStates()) {
+				GamePoint topLeftPoint = new GamePoint(state.getX(), state.getY());
+				GamePoint bottomRightPoint = new GamePoint(state.getX()+1, state.getY()+1);
 
-					mElementRenderer.render(
-						canvas,
-						mGameState.getElementState(i, j),
-						false,
-						topLeftPoint.getScreenX(),
-						topLeftPoint.getScreenY(),
-						bottomRightPoint.getScreenX(),
-						bottomRightPoint.getScreenY()
-					);
-				}
+				mElementRenderer.render(
+					canvas,
+					state.getVariation(),
+					state.isFaded(),
+					gamePointToScreenX(topLeftPoint),
+					gamePointToScreenY(topLeftPoint),
+					gamePointToScreenX(bottomRightPoint),
+					gamePointToScreenY(bottomRightPoint)
+				);
 			}
 		}
 	}
@@ -95,24 +93,31 @@ public class PlaySurface extends View {
 			linePaint.setColor(baseColor);
 
 			canvas.drawLine(
-				mStartStrokePoint.getScreenX(),
-				mStartStrokePoint.getScreenY(),
-				mEndStrokePoint.getScreenX(),
-				mEndStrokePoint.getScreenY(),
+				gamePointToScreenX(mStartStrokePoint),
+				gamePointToScreenY(mStartStrokePoint),
+				gamePointToScreenX(mEndStrokePoint),
+				gamePointToScreenY(mEndStrokePoint),
 				linePaint
 			);
+
 			canvas.drawCircle(
-				mStartStrokePoint.getScreenX(),
-				mStartStrokePoint.getScreenY(),
+				gamePointToScreenX(mStartStrokePoint),
+				gamePointToScreenY(mStartStrokePoint),
 				px(5),
 				linePaint
 			);
 
+			canvas.drawCircle(
+				gamePointToScreenX(mEndStrokePoint),
+				gamePointToScreenY(mEndStrokePoint),
+				px(5),
+				linePaint
+			);
 			linePaint.setColor(ColorUtil.applyAlpha(baseColor, 0x60));
 			for (int i = 0; i < 3; i++) {
 				canvas.drawCircle(
-					mEndStrokePoint.getScreenX(),
-					mEndStrokePoint.getScreenY(),
+					gamePointToScreenX(mEndStrokePoint),
+					gamePointToScreenY(mEndStrokePoint),
 					px(5 * (3 - i)),
 					linePaint
 				);
@@ -165,56 +170,13 @@ public class PlaySurface extends View {
 		return gamePointfromScreenCoord(event.getX(), event.getY());
 	}
 
-	class GamePoint {
-		float x, y;
+	private int gamePointToScreenX(GamePoint point) {
+		return (int)((mColSize * point.getX()) + getPaddingLeft());
 
-		GamePoint(GamePoint point) {
-			this.x = point.x;
-			this.y = point.y;
-		}
+	}
 
-		private GamePoint(float x, float y) {
-			this.x = x;
-			this.y = y;
-		}
-
-		float getGameX() {
-			return x;
-		}
-
-		float getGameY() {
-			return y;
-		}
-
-		int getScreenX() {
-			return (int)((mColSize * x) + getPaddingLeft());
-		}
-
-		int getScreenY() {
-			return (int)((mRowSize * y) + getPaddingTop());
-		}
-
-		void snapToGrid() {
-			x = Math.round(x);
-			y = Math.round(y);
-		}
-
-		void snapOrtho(GamePoint reference) {
-			float xDiff = Math.abs(reference.x - this.x);
-			float yDiff = Math.abs(reference.y - this.y);
-
-			if (xDiff > yDiff) this.y = reference.y;
-			else this.x = reference.x;
-		}
-
-		public boolean equals(Object o) {
-			if (o instanceof GamePoint) {
-				GamePoint p = (GamePoint)o;
-				if (this.x == p.x && this.y == p.y) return true;
-			}
-			return false;
-		}
-
+	private int gamePointToScreenY(GamePoint point) {
+		return (int)((mRowSize * point.getY()) + getPaddingTop());
 	}
 
 }

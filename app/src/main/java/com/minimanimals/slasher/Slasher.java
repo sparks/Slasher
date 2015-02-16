@@ -18,7 +18,7 @@ public class Slasher extends Activity {
 		ElementRenderer elementRenderer = new SlashElementRenderer();
 		// ElementRenderer elementRenderer = new DotElementRenderer();
 
-		GameState gameState = new GameState(6, 10, 8);
+		GameState gameState = new GameState(6, 10, elementRenderer);
 
 		PlaySurface playSurface = (PlaySurface)findViewById(R.id.play_surface);
 		playSurface.init(gameState, elementRenderer);

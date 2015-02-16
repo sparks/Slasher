@@ -17,7 +17,21 @@ public class SlashElementRenderer implements ElementRenderer {
 
 	public SlashElementRenderer() {}
 
-	public void render(Canvas canvas, int variation, boolean fade, int left, int top, int right, int bottom) {
+	public int numVariations() {
+		return mColors.length * 2;
+	}
+
+	public boolean isSymmetric(int varA, int varB, boolean vertical) {
+		if (varA > varB) {
+			int tmp = varB;
+			varB = varA;
+			varA = tmp;
+		}
+
+		return (varA % 2) == 0 && varB == varA + 1;
+	}
+
+	public void render(Canvas canvas, int variation, boolean faded, int left, int top, int right, int bottom) {
 		boolean direction = (variation % 2) == 0;
 		int colorIndex = variation / 2;
 

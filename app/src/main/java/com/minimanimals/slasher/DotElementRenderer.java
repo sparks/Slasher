@@ -17,7 +17,15 @@ public class DotElementRenderer implements ElementRenderer {
 
 	public DotElementRenderer() {}
 
-	public void render(Canvas canvas, int variation, boolean fade, int left, int top, int right, int bottom) {
+	public int numVariations() {
+		return mColors.length;
+	}
+
+	public boolean isSymmetric(int varA, int varB, boolean vertical) {
+		return varA == varB;
+	}
+
+	public void render(Canvas canvas, int variation, boolean faded, int left, int top, int right, int bottom) {
 		int colorIndex = variation;
 
 		int width = right - left;

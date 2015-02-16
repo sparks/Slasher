@@ -1,32 +1,34 @@
 package com.minimanimals.slasher;
 
 import java.util.Random;
+import java.util.Iterator;
 
 public class GameState {
 
 	Random mRandom;
 
-	int mVariations;
-	int[][] mElementStates;
+	ElementRenderer mElementRenderer;
 
-	public GameState(int cols, int rows, int variations) {
-		mVariations = variations;
+	ElementState[][] mElementStates;
 
+	public GameState(int cols, int rows, ElementRenderer elementRenderer) {
 		mRandom = new Random();
 
-		mElementStates = new int[cols][rows];
+		mElementRenderer = elementRenderer;
+
+		mElementStates = new ElementState[cols][rows];
 		randomizeState();
 	}
 
 	public void randomizeState() {
 		for (int i = 0; i < mElementStates.length; i++) {
 			for (int j = 0; j < mElementStates[i].length; j++) {
-				mElementStates[i][j] = (int)(mRandom.nextDouble() * mVariations);
+				mElementStates[i][j] = new ElementState(i, j, (int)(mRandom.nextDouble() * mElementRenderer.numVariations()), false);
 			}
 		}
 	}
 
-	public int getElementState(int i, int j) {
+	public ElementState getElementState(int i, int j) {
 		return mElementStates[i][j];
 	}
 
@@ -36,6 +38,36 @@ public class GameState {
 
 	public int numRows() {
 		return mElementStates[0].length;
+	}
+
+	public Iterable<ElementState> iterElementStates() {
+		return new Iterable() {
+			public Iterator<ElementState> iterator() {
+				return new Iterator<ElementState>() {
+
+					int i, j;
+
+					public boolean hasNext() {
+						return !(i == numCols() - 1 && j == numRows() - 1);
+					}
+
+					public ElementState next() {
+						ElementState nextState = mElementStates[i][j];
+						j++;
+						if (j == numRows()) {
+							i++;
+							j = 0;
+						}
+						return nextState;
+					}
+
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+
+				};
+			}
+		};
 	}
 
 }
