@@ -2,17 +2,23 @@ package com.minimanimals.slasher;
 
 public class ElementState {
 
+	public enum Mode {
+		FADED,
+		NORMAL,
+		HIGHLIGHTED;
+	}
+
 	int mX, mY;
 	int mVariation;
-	boolean mFaded;
+	Mode mMode;
 
-	public ElementState(int x, int y, int variation, boolean faded) {
+	public ElementState(int x, int y, int variation, Mode mode) {
 		mX = x;
 		mY = y;
 
 		mVariation = variation;
 
-		mFaded = faded;
+		mMode = mode;
 	}
 
 	public int getX() {
@@ -24,11 +30,19 @@ public class ElementState {
 	}
 
 	public boolean isFaded() {
-		return mFaded;
+		return mMode == Mode.FADED;
 	}
 
-	public void setFaded(boolean faded) {
-		mFaded = faded;
+	public boolean isHighlighted() {
+		return mMode == Mode.HIGHLIGHTED;
+	}
+
+	public Mode getMode() {
+		return mMode;
+	}
+
+	public void setMode(Mode mode) {
+		mMode = mode;
 	}
 
 	public int getVariation() {

@@ -27,7 +27,7 @@ public class GameState {
 	public void randomizeState() {
 		for (int x = 0; x < mElementStates.length; x++) {
 			for (int y = 0; y < mElementStates[x].length; y++) {
-				mElementStates[x][y] = new ElementState(x, y, (int)(mRandom.nextDouble() * mElementRenderer.numVariations()), false);
+				mElementStates[x][y] = new ElementState(x, y, (int)(mRandom.nextDouble() * mElementRenderer.numVariations()), ElementState.Mode.NORMAL);
 			}
 		}
 	}
@@ -82,14 +82,14 @@ public class GameState {
 		return Math.min(Math.max(0, y), numRows());
 	}
 
-	private void setFaded(boolean faded) {
+	private void setElementStateMode(ElementState.Mode mode) {
 		for (ElementState state : iterElementStates()) {
-			state.setFaded(faded);
+			state.setMode(mode);
 		}
 	}
 
 	public void setStartStrokePoint(GamePoint point) {
-		if (mStartStrokePoint != null && point == null) setFaded(false);
+		if (mStartStrokePoint != null && point == null) setElementStateMode(ElementState.Mode.NORMAL);
 		mStartStrokePoint = point;
 	}
 
@@ -97,7 +97,7 @@ public class GameState {
 		mEndStrokePoint = point;
 		if (mStartStrokePoint == null || mEndStrokePoint == null) return;
 
-		setFaded(true);
+		setElementStateMode(ElementState.Mode.FADED);
 
 		if (mStartStrokePoint.getY() == mEndStrokePoint.getY()) {
 			int yPivot = constrainY((int)mStartStrokePoint.getY());
@@ -113,8 +113,8 @@ public class GameState {
 					ElementState below = mElementStates[x][yPivot-y-1];
 
 					if (mElementRenderer.isSymmetric(above.getVariation(), below.getVariation(), true)) {
-						above.setFaded(false);
-						below.setFaded(false);
+						above.setMode(ElementState.Mode.HIGHLIGHTED);
+						below.setMode(ElementState.Mode.HIGHLIGHTED);
 					}
 				}
 			}
@@ -132,8 +132,8 @@ public class GameState {
 					ElementState below = mElementStates[xPivot-x-1][y];
 
 					if (mElementRenderer.isSymmetric(above.getVariation(), below.getVariation(), true)) {
-						above.setFaded(false);
-						below.setFaded(false);
+						above.setMode(ElementState.Mode.HIGHLIGHTED);
+						below.setMode(ElementState.Mode.HIGHLIGHTED);
 					}
 				}
 			}
