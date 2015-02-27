@@ -29,12 +29,9 @@ public class ElementState {
 		return mY;
 	}
 
-	public boolean isFaded() {
-		return mMode == Mode.FADED;
-	}
-
-	public boolean isHighlighted() {
-		return mMode == Mode.HIGHLIGHTED;
+	public void setXY(int x, int y) {
+		mX = x;
+		mY = y;
 	}
 
 	public Mode getMode() {

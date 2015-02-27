@@ -1,4 +1,4 @@
-package com.minimanimal.slasher.util;
+package com.minimanimals.slasher.util;
 
 import android.graphics.Color;
 import android.util.Log;

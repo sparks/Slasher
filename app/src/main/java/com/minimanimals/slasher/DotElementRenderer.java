@@ -2,8 +2,7 @@ package com.minimanimals.slasher;
 
 import android.graphics.Paint;
 import android.graphics.Canvas;
-import android.content.Context;
-import com.minimanimal.slasher.util.ColorUtil;
+import com.minimanimals.slasher.util.ColorUtil;
 
 public class DotElementRenderer implements ElementRenderer {
 
@@ -26,11 +25,11 @@ public class DotElementRenderer implements ElementRenderer {
 		return varA == varB;
 	}
 
-	public void render(Canvas canvas, int variation, boolean faded, int left, int top, int right, int bottom) {
+	public void render(Canvas canvas, int variation, ElementState.Mode mode, int left, int top, int right, int bottom) {
 		int colorIndex = variation;
 
 		int color = mColors[colorIndex];
-		if (faded) color = ColorUtil.desaturate(color, 0.1f);
+		if (mode == ElementState.Mode.FADED) color = ColorUtil.desaturate(color, 0.1f);
 
 		int width = right - left;
 		int height = bottom - top;

@@ -1,26 +1,30 @@
-<FrameLayout 
+<LinearLayout 
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_height="match_parent"
+	android:background="@android:color/white"
+	android:orientation="vertical"
+	tools:context=".Slasher">
 
-	<FrameLayout 
-		android:id="@+id/slasher_container"
+	<TextView
+		android:id="@+id/score"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:background="@android:color/white">
+		android:layout_height="30dp"
+		android:gravity="center"
+		android:textSize="15sp"
+		/>
 
-		<com.minimanimals.slasher.PlaySurface
-			android:id="@+id/play_surface"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:keepScreenOn="true"
-			android:paddingTop="40dp"
-			android:paddingBottom="60dp"
-			android:paddingLeft="25dp"
-			android:paddingRight="25dp"
-			android:gravity="center"/>
+	<com.minimanimals.slasher.PlaySurface
+		android:id="@+id/play_surface"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:keepScreenOn="true"
+		android:paddingTop="30dp"
+		android:paddingBottom="60dp"
+		android:paddingLeft="25dp"
+		android:paddingRight="25dp"
+		android:gravity="center"/>
 
-	</FrameLayout>
-
-</FrameLayout>
+</LinearLayout>

@@ -15,6 +15,10 @@ public class GameState {
 	GamePoint mStartStrokePoint;
 	GamePoint mEndStrokePoint;
 
+	int mScore;
+
+	ScoreChangeListener mScoreChangeListener;
+
 	public GameState(int cols, int rows, ElementRenderer elementRenderer) {
 		mRandom = new Random();
 
@@ -22,6 +26,26 @@ public class GameState {
 
 		mElementStates = new ElementState[cols][rows];
 		randomizeState();
+	}
+
+	public void setScoreChangeListener(ScoreChangeListener listener) {
+		mScoreChangeListener = listener;
+	}
+
+	void addPoints(int points) {
+		mScore += points;
+
+		if (mScoreChangeListener != null) mScoreChangeListener.scoreChange(mScore);
+	}
+
+	public int getScore() {
+		return mScore;
+	}
+
+	public void resetScore() {
+		mScore = 0;
+
+		if (mScoreChangeListener != null) mScoreChangeListener.scoreChange(mScore);
 	}
 
 	public void randomizeState() {
@@ -45,7 +69,7 @@ public class GameState {
 	}
 
 	public Iterable<ElementState> iterElementStates() {
-		return new Iterable() {
+		return new Iterable<ElementState>() {
 			public Iterator<ElementState> iterator() {
 				return new Iterator<ElementState>() {
 
@@ -61,8 +85,7 @@ public class GameState {
 							x++;
 							y = 0;
 						}
-						ElementState nextState = mElementStates[x][y];
-						return nextState;
+						return mElementStates[x][y];
 					}
 
 					public void remove() {
@@ -75,11 +98,11 @@ public class GameState {
 	}
 
 	private int constrainX(int x) {
-		return Math.min(Math.max(0, x), numCols());
+		return Math.min(Math.max(0, x), numCols() - 1);
 	}
 
 	private	int constrainY(int y) {
-		return Math.min(Math.max(0, y), numRows());
+		return Math.min(Math.max(0, y), numRows() - 1);
 	}
 
 	private void setElementStateMode(ElementState.Mode mode) {
@@ -88,8 +111,81 @@ public class GameState {
 		}
 	}
 
+	public void endStroke() {
+		if (mStartStrokePoint == null || mEndStrokePoint == null) return;
+
+		for (int x = 0; x < mElementStates.length; x++) {
+			for (int y = 0; y < mElementStates[x].length; y++) {
+				if (mElementStates[x][y].getMode() == ElementState.Mode.HIGHLIGHTED) {
+					addPoints(1);
+					mElementStates[x][y] = null;
+				}
+			}
+		}
+
+		if (mStartStrokePoint.getY() == mEndStrokePoint.getY()) {
+			int startX = constrainX((int)mEndStrokePoint.getX());
+			int endX = constrainX((int)mStartStrokePoint.getX());
+			if (startX != endX) {
+				int incr = (endX-startX)/Math.abs(endX-startX);
+				for (int x = startX; x >= 0 && x < mElementStates.length; x += incr) {
+					for (int y = 0; y < mElementStates[x].length; y++) {
+						if (mElementStates[x][y] == null) {
+							ElementState prevState = null;
+							int prevX = x + incr;
+							while (prevState == null && prevX >= 0 && prevX < mElementStates.length) {
+								if (mElementStates[prevX][y] != null) {
+									prevState = mElementStates[prevX][y];
+									mElementStates[prevX][y] = null;
+								}
+								prevX += incr;
+							}
+							if (prevState == null) {
+								prevState = new ElementState(x, y, (int)(mRandom.nextDouble() * mElementRenderer.numVariations()), ElementState.Mode.NORMAL);
+							}
+
+							prevState.setXY(x, y);
+							mElementStates[x][y] = prevState;
+						}
+					}
+				}
+			}
+		} else if (mStartStrokePoint.getX() == mEndStrokePoint.getX()) {
+			int startY = constrainY((int)mEndStrokePoint.getY());
+			int endY = constrainY((int)mStartStrokePoint.getY());
+			if (startY != endY) {
+				int incr = (endY-startY)/Math.abs(endY-startY);
+				for (int y = startY; y >= 0 && y < mElementStates[0].length; y += incr) {
+					for (int x = 0; x < mElementStates.length; x++) {
+						if (mElementStates[x][y] == null) {
+							ElementState prevState = null;
+							int prevY = y + incr;
+							while (prevState == null && prevY >= 0 && prevY < mElementStates[x].length) {
+								if (mElementStates[x][prevY] != null) {
+									prevState = mElementStates[x][prevY];
+									mElementStates[x][prevY] = null;
+								}
+								prevY += incr;
+							}
+							if (prevState == null) {
+								prevState = new ElementState(x, y, (int)(mRandom.nextDouble() * mElementRenderer.numVariations()), ElementState.Mode.NORMAL);
+							}
+
+							prevState.setXY(x, y);
+							mElementStates[x][y] = prevState;
+						}
+					}
+				}
+			}
+		}
+
+		mStartStrokePoint = null;
+		mEndStrokePoint = null;
+
+		setElementStateMode(ElementState.Mode.NORMAL);
+	}
+
 	public void setStartStrokePoint(GamePoint point) {
-		if (mStartStrokePoint != null && point == null) setElementStateMode(ElementState.Mode.NORMAL);
 		mStartStrokePoint = point;
 	}
 
@@ -146,6 +242,10 @@ public class GameState {
 
 	public GamePoint getEndStrokePoint() {
 		return mEndStrokePoint;
+	}
+
+	public interface ScoreChangeListener {
+		public void scoreChange(int score);
 	}
 
 }

@@ -3,9 +3,12 @@ package com.minimanimals.slasher;
 import android.view.View;
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.TextView;
 
 
 public class Slasher extends Activity {
+
+	GameState mGameState;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -13,20 +16,27 @@ public class Slasher extends Activity {
 
 		setContentView(R.layout.activity_slasher);
 
-		View container = findViewById(R.id.slasher_container);
-
 		ElementRenderer elementRenderer = new SlashElementRenderer();
 		// ElementRenderer elementRenderer = new DotElementRenderer();
 
-		GameState gameState = new GameState(6, 10, elementRenderer);
+		mGameState = new GameState(6, 10, elementRenderer);
 
 		PlaySurface playSurface = (PlaySurface)findViewById(R.id.play_surface);
-		playSurface.init(gameState, elementRenderer);
+		playSurface.init(mGameState, elementRenderer);
+
+		final TextView scoreView = (TextView)findViewById(R.id.score);
+
+		mGameState.setScoreChangeListener(new GameState.ScoreChangeListener() {
+			public void scoreChange(int score) {
+				scoreView.setText("Score " + score);
+			}
+		});
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+		mGameState.resetScore();
 	}
 
 	@Override

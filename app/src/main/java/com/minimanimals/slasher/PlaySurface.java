@@ -7,10 +7,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.MotionEvent;
-import android.graphics.Color;
-import android.util.Log;
-import com.minimanimal.slasher.util.ColorUtil;
-import java.util.Random;
+import com.minimanimals.slasher.util.ColorUtil;
 
 public class PlaySurface extends View {
 
@@ -69,7 +66,7 @@ public class PlaySurface extends View {
 				mElementRenderer.render(
 					canvas,
 					state.getVariation(),
-					state.isFaded(),
+					state.getMode(),
 					gamePointToScreenX(topLeftPoint),
 					gamePointToScreenY(topLeftPoint),
 					gamePointToScreenX(bottomRightPoint),
@@ -144,8 +141,7 @@ public class PlaySurface extends View {
 			}
 			case MotionEvent.ACTION_CANCEL:
 			case MotionEvent.ACTION_UP: {
-				mGameState.setStartStrokePoint(null);
-				mGameState.setEndStrokePoint(null);
+				mGameState.endStroke();
 				invalidate();
 				break;
 			}

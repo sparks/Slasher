@@ -3,7 +3,7 @@ package com.minimanimals.slasher;
 import android.graphics.Paint;
 import android.graphics.Canvas;
 import android.content.Context;
-import com.minimanimal.slasher.util.ColorUtil;
+import com.minimanimals.slasher.util.ColorUtil;
 
 public class SlashElementRenderer implements ElementRenderer {
 
@@ -32,19 +32,22 @@ public class SlashElementRenderer implements ElementRenderer {
 		return (varA % 2) == 0 && varB == varA + 1;
 	}
 
-	public void render(Canvas canvas, int variation, boolean faded, int left, int top, int right, int bottom) {
+	public void render(Canvas canvas, int variation, ElementState.Mode mode, int left, int top, int right, int bottom) {
 		boolean direction = (variation % 2) == 0;
 		int colorIndex = variation / 2;
 
 		int color = mColors[colorIndex];
-		if (faded) color = ColorUtil.desaturate(color, 0.1f);
+		if (mode == ElementState.Mode.FADED) color = ColorUtil.desaturate(color, 0.66f);
+
+		float strokeSize = 0.1f;
+		if (mode == ElementState.Mode.HIGHLIGHTED) strokeSize = 0.2f;
 
 		int width = right - left;
 		int height = bottom - top;
 
 		Paint paint = new Paint();
 		paint.setStyle(Paint.Style.STROKE);
-		paint.setStrokeWidth(0.1f * width);
+		paint.setStrokeWidth(strokeSize * width);
 		paint.setFlags(Paint.ANTI_ALIAS_FLAG);
 		paint.setColor(color);
 
