@@ -13,7 +13,7 @@ public class SlashElementRenderer implements ElementRenderer {
 		0xff3959a8,
 		0xff07b68e,
 		0xffa7cf3b,
-		0xffed1976
+		// 0xffed1976,
 	};
 
 	public SlashElementRenderer() {}

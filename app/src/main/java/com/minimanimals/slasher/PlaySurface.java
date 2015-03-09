@@ -34,11 +34,15 @@ public class PlaySurface extends View {
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
 		setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
 	}
 
 	@Override
 	protected void onSizeChanged(int newWidth, int newHeight, int oldWidth, int oldHeight) {
+		super.onSizeChanged(newWidth, newHeight, oldWidth, oldHeight);
+
 		mColSize = (newWidth - getPaddingLeft() - getPaddingRight()) / mGameState.numCols();
 		mRowSize = (newHeight - getPaddingTop() - getPaddingBottom()) / mGameState.numRows();
 	}
@@ -55,13 +59,20 @@ public class PlaySurface extends View {
 
 		drawElements(canvas);
 		drawStrokeUI(canvas);
+
+		for (ElementState state : mGameState.iterElementStates()) {
+			if (state.isAnimating()) {
+				invalidate();
+				return;
+			}
+		}
 	}
 
 	void drawElements(Canvas canvas) {
 		if (mElementRenderer != null) {
 			for (ElementState state : mGameState.iterElementStates()) {
-				GamePoint topLeftPoint = new GamePoint(state.getX(), state.getY());
-				GamePoint bottomRightPoint = new GamePoint(state.getX()+1, state.getY()+1);
+				GamePoint topLeftPoint = new GamePoint(state.getActualX(), state.getActualY());
+				GamePoint bottomRightPoint = new GamePoint(state.getActualX()+1, state.getActualY()+1);
 
 				mElementRenderer.render(
 					canvas,

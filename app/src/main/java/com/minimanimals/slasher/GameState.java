@@ -97,12 +97,14 @@ public class GameState {
 		};
 	}
 
-	private int constrainX(int x) {
-		return Math.min(Math.max(0, x), numCols() - 1);
+	private int constrainX(int x, boolean mode) {
+		if (mode) return Math.min(Math.max(0, x), numCols() - 1);
+		else return Math.min(Math.max(0, x), numCols());
 	}
 
-	private	int constrainY(int y) {
-		return Math.min(Math.max(0, y), numRows() - 1);
+	private	int constrainY(int y, boolean mode) {
+		if (mode) return Math.min(Math.max(0, y), numRows() - 1);
+		else return Math.min(Math.max(0, y), numRows());
 	}
 
 	private void setElementStateMode(ElementState.Mode mode) {
@@ -124,12 +126,13 @@ public class GameState {
 		}
 
 		if (mStartStrokePoint.getY() == mEndStrokePoint.getY()) {
-			int startX = constrainX((int)mEndStrokePoint.getX());
-			int endX = constrainX((int)mStartStrokePoint.getX());
+			int startX = (int)mEndStrokePoint.getX();
+			int endX = (int)mStartStrokePoint.getX();
 			if (startX != endX) {
 				int incr = (endX-startX)/Math.abs(endX-startX);
-				for (int x = startX; x >= 0 && x < mElementStates.length; x += incr) {
-					for (int y = 0; y < mElementStates[x].length; y++) {
+				for (int y = 0; y < mElementStates[0].length; y++) {
+					int numNewStates = 0;
+					for (int x = constrainX(startX, true); x >= 0 && x < mElementStates.length; x += incr) {
 						if (mElementStates[x][y] == null) {
 							ElementState prevState = null;
 							int prevX = x + incr;
@@ -141,7 +144,8 @@ public class GameState {
 								prevX += incr;
 							}
 							if (prevState == null) {
-								prevState = new ElementState(x, y, (int)(mRandom.nextDouble() * mElementRenderer.numVariations()), ElementState.Mode.NORMAL);
+								prevState = new ElementState(prevX + numNewStates * incr, y, (int)(mRandom.nextDouble() * mElementRenderer.numVariations()), ElementState.Mode.NORMAL);
+								numNewStates++;
 							}
 
 							prevState.setXY(x, y);
@@ -151,12 +155,13 @@ public class GameState {
 				}
 			}
 		} else if (mStartStrokePoint.getX() == mEndStrokePoint.getX()) {
-			int startY = constrainY((int)mEndStrokePoint.getY());
-			int endY = constrainY((int)mStartStrokePoint.getY());
+			int startY = (int)mEndStrokePoint.getY();
+			int endY = (int)mStartStrokePoint.getY();
 			if (startY != endY) {
 				int incr = (endY-startY)/Math.abs(endY-startY);
-				for (int y = startY; y >= 0 && y < mElementStates[0].length; y += incr) {
-					for (int x = 0; x < mElementStates.length; x++) {
+				for (int x = 0; x < mElementStates.length; x++) {
+					int numNewStates = 0;
+					for (int y = constrainY(startY, true); y >= 0 && y < mElementStates[0].length; y += incr) {
 						if (mElementStates[x][y] == null) {
 							ElementState prevState = null;
 							int prevY = y + incr;
@@ -168,7 +173,8 @@ public class GameState {
 								prevY += incr;
 							}
 							if (prevState == null) {
-								prevState = new ElementState(x, y, (int)(mRandom.nextDouble() * mElementRenderer.numVariations()), ElementState.Mode.NORMAL);
+								prevState = new ElementState(x, prevY + numNewStates * incr, (int)(mRandom.nextDouble() * mElementRenderer.numVariations()), ElementState.Mode.NORMAL);
+								numNewStates++;
 							}
 
 							prevState.setXY(x, y);
@@ -196,10 +202,10 @@ public class GameState {
 		setElementStateMode(ElementState.Mode.FADED);
 
 		if (mStartStrokePoint.getY() == mEndStrokePoint.getY()) {
-			int yPivot = constrainY((int)mStartStrokePoint.getY());
+			int yPivot = constrainY((int)mStartStrokePoint.getY(), true);
 
-			int startX = constrainX((int)mStartStrokePoint.getX());
-			int endX = constrainX((int)mEndStrokePoint.getX());
+			int startX = constrainX((int)mStartStrokePoint.getX(), false);
+			int endX = constrainX((int)mEndStrokePoint.getX(), false);
 
 			for (int x = Math.min(startX, endX); x < Math.max(startX, endX); x++) {
 				for (int y = 0; y < yPivot; y++) {
@@ -215,10 +221,10 @@ public class GameState {
 				}
 			}
 		} else if (mStartStrokePoint.getX() == mEndStrokePoint.getX()) {
-			int xPivot = constrainX((int)mStartStrokePoint.getX());
+			int xPivot = constrainX((int)mStartStrokePoint.getX(), true);
 
-			int startY = constrainY((int)mStartStrokePoint.getY());
-			int endY = constrainY((int)mEndStrokePoint.getY());
+			int startY = constrainY((int)mStartStrokePoint.getY(), false);
+			int endY = constrainY((int)mEndStrokePoint.getY(), false);
 
 			for (int y = Math.min(startY, endY); y < Math.max(startY, endY); y++) {
 				for (int x = 0; x < xPivot; x++) {
