@@ -201,6 +201,8 @@ public class GameState {
 
 		setElementStateMode(ElementState.Mode.FADED);
 
+		final int symmetryMaxDis = 1;
+
 		if (mStartStrokePoint.getY() == mEndStrokePoint.getY()) {
 			int yPivot = constrainY((int)mStartStrokePoint.getY(), true);
 
@@ -208,7 +210,7 @@ public class GameState {
 			int endX = constrainX((int)mEndStrokePoint.getX(), false);
 
 			for (int x = Math.min(startX, endX); x < Math.max(startX, endX); x++) {
-				for (int y = 0; y < yPivot; y++) {
+				for (int y = 0; y < Math.min(yPivot, symmetryMaxDis); y++) {
 					if (yPivot+y >= numRows() || yPivot-y-1 < 0) break;
 
 					ElementState above = mElementStates[x][yPivot+y];
@@ -227,7 +229,7 @@ public class GameState {
 			int endY = constrainY((int)mEndStrokePoint.getY(), false);
 
 			for (int y = Math.min(startY, endY); y < Math.max(startY, endY); y++) {
-				for (int x = 0; x < xPivot; x++) {
+				for (int x = 0; x < Math.min(xPivot, symmetryMaxDis); x++) {
 					if (xPivot+x >= numCols() || xPivot-x-1 < 0) break;
 
 					ElementState above = mElementStates[xPivot+x][y];

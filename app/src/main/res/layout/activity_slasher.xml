@@ -1,30 +1,67 @@
-<LinearLayout 
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
+
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@android:color/white"
-	android:orientation="vertical"
-	tools:context=".Slasher">
 
-	<TextView
-		android:id="@+id/score"
+	android:paddingLeft="16dp"
+	android:paddingRight="16dp"
+	android:paddingTop="16dp"
+	android:paddingBottom="16dp"
+
+	android:background="@android:color/white">
+
+	<LinearLayout 
 		android:layout_width="match_parent"
-		android:layout_height="30dp"
-		android:gravity="center"
-		android:textSize="15sp"
-		/>
+		android:layout_height="match_parent"
+		android:orientation="vertical">
 
-	<com.minimanimals.slasher.PlaySurface
-		android:id="@+id/play_surface"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1"
-		android:keepScreenOn="true"
-		android:paddingTop="30dp"
-		android:paddingBottom="60dp"
-		android:paddingLeft="25dp"
-		android:paddingRight="25dp"
-		android:gravity="center"/>
+		<TextView
+			android:id="@+id/score"
+			android:layout_width="match_parent"
+			android:layout_height="30dp"
+			android:gravity="center"
+			android:textSize="15sp"
+			/>
 
-</LinearLayout>
+		<com.minimanimals.slasher.PlaySurface
+			android:id="@+id/play_surface"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:keepScreenOn="true"
+			android:paddingTop="30dp"
+			android:paddingBottom="60dp"
+			android:paddingLeft="25dp"
+			android:paddingRight="25dp"
+			android:gravity="center"/>
+	</LinearLayout>
+
+	<ImageView
+		android:id="@+id/settings_button"
+
+		android:visibility="visible"
+
+		android:layout_width="35dp"
+		android:layout_height="35dp"
+
+		android:tint="#BBBBBB"
+
+		android:src="@drawable/settings"
+
+		android:layout_alignParentTop="true"
+		android:layout_alignParentEnd="true"/>
+
+	<com.minimanimals.util.VersionNameView
+		android:id="@+id/version_name"
+
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+
+		android:textSize="12sp"
+		android:textColor="@android:color/black"
+
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentEnd="true"/>
+
+</RelativeLayout>

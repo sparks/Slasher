@@ -29,7 +29,7 @@ public class DotElementRenderer implements ElementRenderer {
 		int colorIndex = variation;
 
 		int color = mColors[colorIndex];
-		if (mode == ElementState.Mode.FADED) color = ColorUtil.desaturate(color, 0.1f);
+		// if (mode == ElementState.Mode.FADED) color = ColorUtil.desaturate(color, 0.1f);
 
 		int width = right - left;
 		int height = bottom - top;
@@ -37,6 +37,18 @@ public class DotElementRenderer implements ElementRenderer {
 		Paint paint = new Paint();
 		paint.setStyle(Paint.Style.FILL);
 		paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+
+		if (mode == ElementState.Mode.HIGHLIGHTED) {
+			paint.setColor(ColorUtil.desaturate(color, 0.2f));
+
+			canvas.drawCircle(
+				left + width / 2,
+				top + height / 2,
+				Math.min(width, height) * mDotFrac * 1.5f,
+				paint
+			);
+		}
+
 		paint.setColor(color);
 
 		canvas.drawCircle(

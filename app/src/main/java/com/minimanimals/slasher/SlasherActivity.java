@@ -4,11 +4,18 @@ import android.view.View;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.content.Intent;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
-public class Slasher extends Activity {
+public class SlasherActivity extends Activity {
 
 	GameState mGameState;
+
+	@InjectView(R.id.play_surface) PlaySurface mPlaySurface;
+	@InjectView(R.id.score) TextView mScore;
+	@InjectView(R.id.settings_button) View mBackButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -16,19 +23,25 @@ public class Slasher extends Activity {
 
 		setContentView(R.layout.activity_slasher);
 
-		ElementRenderer elementRenderer = new SlashElementRenderer();
-		// ElementRenderer elementRenderer = new DotElementRenderer();
+		ButterKnife.inject(this);
 
-		mGameState = new GameState(6, 10, elementRenderer);
+		// ElementRenderer elementRenderer = new SlashElementRenderer();
+		ElementRenderer elementRenderer = new DotElementRenderer();
 
-		PlaySurface playSurface = (PlaySurface)findViewById(R.id.play_surface);
-		playSurface.init(mGameState, elementRenderer);
+		mGameState = new GameState(5, 8, elementRenderer);
 
-		final TextView scoreView = (TextView)findViewById(R.id.score);
+		mPlaySurface.init(mGameState, elementRenderer);
 
 		mGameState.setScoreChangeListener(new GameState.ScoreChangeListener() {
 			public void scoreChange(int score) {
-				scoreView.setText("Score " + score);
+				mScore.setText("Score " + score);
+			}
+		});
+
+		mBackButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Intent intent = new Intent(SlasherActivity.this, SlasherSettingsActivity.class);
+				startActivity(intent);
 			}
 		});
 	}
