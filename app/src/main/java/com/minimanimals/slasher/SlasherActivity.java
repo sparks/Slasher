@@ -35,7 +35,7 @@ public class SlasherActivity extends Activity {
 
 	public void reloadGameRenderers() {
 		ElementRenderer elementRenderer;
-		if (SlasherSettings.RENDERER.getString().equals("dots")) {
+		if (SlasherSettings.RENDERER.getInt() == 0) {
 			elementRenderer = new DotElementRenderer();
 		} else {
 			elementRenderer = new SlashElementRenderer();

@@ -10,9 +10,10 @@ import android.app.Application;
  */
 public enum SlasherSettings {
 
-	RENDERER("renderer", "dots", true),
+	RENDERER("renderer", 0, true),
 	VAR_CAP("var_cap", 4, true),
-
+	SYMM_DIST("symm_dist", 1, true),
+	CONN_SYMM("conn_symm", 0, true),
 	CURRENT_VERSION_CODE("current_version_code", -1, false);
 
 	private static Application mApplication;

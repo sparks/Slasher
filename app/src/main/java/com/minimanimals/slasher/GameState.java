@@ -201,7 +201,8 @@ public class GameState {
 
 		setElementStateMode(ElementState.Mode.FADED);
 
-		final int symmetryMaxDis = 1;
+		final int symmetryMaxDis = SlasherSettings.SYMM_DIST.getInt();
+		final int connectedSymm = SlasherSettings.CONN_SYMM.getInt();
 
 		if (mStartStrokePoint.getY() == mEndStrokePoint.getY()) {
 			int yPivot = constrainY((int)mStartStrokePoint.getY(), true);
@@ -217,8 +218,19 @@ public class GameState {
 					ElementState below = mElementStates[x][yPivot-y-1];
 
 					if (mElementRenderer.isSymmetric(above.getVariation(), below.getVariation(), true)) {
+						if (connectedSymm == 2) {
+							if (y > 0) {
+								ElementState prevAbove = mElementStates[x][yPivot+y-1];
+								if (!mElementRenderer.isSymmetric(prevAbove.getVariation(), below.getVariation(), true)) {
+									break;
+								}
+							}
+						}
+
 						above.setMode(ElementState.Mode.HIGHLIGHTED);
 						below.setMode(ElementState.Mode.HIGHLIGHTED);
+					} else if (connectedSymm == 1 || connectedSymm == 2) {
+						break;
 					}
 				}
 			}
@@ -236,8 +248,19 @@ public class GameState {
 					ElementState below = mElementStates[xPivot-x-1][y];
 
 					if (mElementRenderer.isSymmetric(above.getVariation(), below.getVariation(), true)) {
+						if (connectedSymm == 2) {
+							if (x > 0) {
+								ElementState prevAbove = mElementStates[xPivot+x-1][y];
+								if (!mElementRenderer.isSymmetric(prevAbove.getVariation(), below.getVariation(), true)) {
+									break;
+								}
+							}
+						}
+
 						above.setMode(ElementState.Mode.HIGHLIGHTED);
 						below.setMode(ElementState.Mode.HIGHLIGHTED);
+					} else if (connectedSymm == 1 || connectedSymm == 2) {
+						break;
 					}
 				}
 			}

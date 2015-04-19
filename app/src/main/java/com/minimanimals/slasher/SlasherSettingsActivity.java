@@ -6,6 +6,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.NumberPicker;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.util.TypedValue;
 
 import com.minimanimals.slasher.R;
 
@@ -15,9 +18,8 @@ import butterknife.InjectView;
 public class SlasherSettingsActivity extends ActionBarActivity {
 
 	@InjectView(R.id.back_button) View mBackButton;
-	@InjectView(R.id.var_cap_num_pick) NumberPicker mNumberPicker;
-	@InjectView(R.id.slash_renderer) View mSlashRenderer;
-	@InjectView(R.id.dot_renderer) View mDoRenderer;
+
+	@InjectView(R.id.settings_container) ViewGroup mSettingsContainer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,27 +36,37 @@ public class SlasherSettingsActivity extends ActionBarActivity {
 			}
 		});
 
-		mNumberPicker.setMinValue(1);
-		mNumberPicker.setMaxValue(10);
-		mNumberPicker.setValue(SlasherSettings.VAR_CAP.getInt());
+		for (final SlasherSettings setting : SlasherSettings.values()) {
+			if (setting.type() == SlasherSettings.Type.INTEGER && setting.isUserSet()) {
+				TextView tv = new TextView(this);
+				tv.setText(setting.toString());
 
-		mNumberPicker.setOnScrollListener(new NumberPicker.OnScrollListener() {
-			public void onScrollStateChange(NumberPicker view, int scrollState) {
-				SlasherSettings.VAR_CAP.set(mNumberPicker.getValue());
-			}
-		});
+				mSettingsContainer.addView(tv);
 
-		mSlashRenderer.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				SlasherSettings.RENDERER.set("slashes");
-			}
-		});
+				ViewGroup.LayoutParams lp = tv.getLayoutParams();
+				lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+				lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
 
-		mDoRenderer.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				SlasherSettings.RENDERER.set("dots");
+				NumberPicker picker = new NumberPicker(this);
+				picker.setMinValue(0);
+				picker.setMaxValue(10);
+				picker.setValue(setting.getInt());
+
+				picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+					public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+						setting.set(picker.getValue());
+					}
+				});
+
+				picker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+
+				mSettingsContainer.addView(picker);
+
+				lp = picker.getLayoutParams();
+				lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+				lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
 			}
-		});
+		}
 	}
 
 	@Override
