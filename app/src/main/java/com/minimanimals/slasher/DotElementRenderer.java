@@ -15,10 +15,16 @@ public class DotElementRenderer implements ElementRenderer {
 		0xffed1976
 	};
 
+	int mMaxVariations = mColors.length;
+
 	public DotElementRenderer() {}
 
+	public void setMaxVariations(int max) {
+		mMaxVariations = max;
+	}
+
 	public int numVariations() {
-		return mColors.length;
+		return Math.min(mColors.length, mMaxVariations);
 	}
 
 	public boolean isSymmetric(int varA, int varB, boolean vertical) {

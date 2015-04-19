@@ -13,13 +13,19 @@ public class SlashElementRenderer implements ElementRenderer {
 		0xff3959a8,
 		0xff07b68e,
 		0xffa7cf3b,
-		// 0xffed1976,
+		0xffed1976,
 	};
+
+	int mMaxVariations = mColors.length * 2;
 
 	public SlashElementRenderer() {}
 
+	public void setMaxVariations(int max) {
+		mMaxVariations = max;
+	}
+
 	public int numVariations() {
-		return mColors.length * 2;
+		return Math.min(mColors.length * 2, mMaxVariations);
 	}
 
 	public boolean isSymmetric(int varA, int varB, boolean vertical) {

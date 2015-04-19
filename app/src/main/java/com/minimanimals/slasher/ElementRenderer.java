@@ -8,6 +8,8 @@ public interface ElementRenderer {
 
 	public int numVariations();
 
+	public void setMaxVariations(int max);
+
 	public boolean isSymmetric(int varA, int varB, boolean vertical);
 
 }

@@ -25,8 +25,23 @@ public class SlasherActivity extends Activity {
 
 		ButterKnife.inject(this);
 
-		// ElementRenderer elementRenderer = new SlashElementRenderer();
-		ElementRenderer elementRenderer = new DotElementRenderer();
+		mBackButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Intent intent = new Intent(SlasherActivity.this, SlasherSettingsActivity.class);
+				startActivity(intent);
+			}
+		});
+	}
+
+	public void reloadGameRenderers() {
+		ElementRenderer elementRenderer;
+		if (SlasherSettings.RENDERER.getString().equals("dots")) {
+			elementRenderer = new DotElementRenderer();
+		} else {
+			elementRenderer = new SlashElementRenderer();
+		}
+
+		elementRenderer.setMaxVariations(SlasherSettings.VAR_CAP.getInt());
 
 		mGameState = new GameState(5, 8, elementRenderer);
 
@@ -37,18 +52,12 @@ public class SlasherActivity extends Activity {
 				mScore.setText("Score " + score);
 			}
 		});
-
-		mBackButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Intent intent = new Intent(SlasherActivity.this, SlasherSettingsActivity.class);
-				startActivity(intent);
-			}
-		});
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+		reloadGameRenderers();
 		mGameState.resetScore();
 	}
 

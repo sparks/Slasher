@@ -24,13 +24,34 @@
 		android:orientation="vertical">
 
 
+		<NumberPicker
+			android:id="@+id/var_cap_num_pick"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+
+		<TextView
+			android:id="@+id/slash_renderer"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Slash renderer"
+			android:padding="8dp"
+			android:textSize="30sp"/>
+
+		<TextView
+			android:id="@+id/dot_renderer"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Dot renderer"
+			android:padding="8dp"
+			android:textSize="30sp"/>
+	
 	</LinearLayout>
 
 	<ImageView
 		android:id="@+id/back_button"
 
-		android:layout_width="35dp"
-		android:layout_height="35dp"
+		android:layout_width="25dp"
+		android:layout_height="25dp"
 
 		android:tint="#BBBBBB"
 
@@ -44,6 +65,9 @@
 
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
+
+		android:textSize="12sp"
+		android:textColor="@android:color/black"
 
 		android:layout_alignParentBottom="true"
 		android:layout_alignParentEnd="true"/>
