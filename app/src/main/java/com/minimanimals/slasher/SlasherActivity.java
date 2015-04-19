@@ -43,7 +43,7 @@ public class SlasherActivity extends Activity {
 
 		elementRenderer.setMaxVariations(SlasherSettings.VAR_CAP.getInt());
 
-		mGameState = new GameState(5, 8, elementRenderer);
+		mGameState = new GameState(SlasherSettings.X_SIZE.getInt(), SlasherSettings.Y_SIZE.getInt(), elementRenderer);
 
 		mPlaySurface.init(mGameState, elementRenderer);
 

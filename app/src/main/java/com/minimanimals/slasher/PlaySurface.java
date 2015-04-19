@@ -30,6 +30,8 @@ public class PlaySurface extends View {
 		mGameState = gameState;
 
 		mElementRenderer = elementRenderer;
+
+		recalculateColAndRowSizes(getWidth(), getHeight());
 	}
 
 	@Override
@@ -43,8 +45,12 @@ public class PlaySurface extends View {
 	protected void onSizeChanged(int newWidth, int newHeight, int oldWidth, int oldHeight) {
 		super.onSizeChanged(newWidth, newHeight, oldWidth, oldHeight);
 
-		mColSize = (newWidth - getPaddingLeft() - getPaddingRight()) / mGameState.numCols();
-		mRowSize = (newHeight - getPaddingTop() - getPaddingBottom()) / mGameState.numRows();
+		recalculateColAndRowSizes(newWidth, newHeight);
+	}
+
+	void recalculateColAndRowSizes(int width, int height) {
+		mColSize = (width - getPaddingLeft() - getPaddingRight()) / mGameState.numCols();
+		mRowSize = (height - getPaddingTop() - getPaddingBottom()) / mGameState.numRows();
 	}
 
 	private float px(float dp) {
