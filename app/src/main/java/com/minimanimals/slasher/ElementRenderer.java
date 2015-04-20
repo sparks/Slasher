@@ -12,4 +12,6 @@ public interface ElementRenderer {
 
 	public boolean isSymmetric(int varA, int varB, boolean vertical);
 
+	public boolean isColorMatch(int varA, int varB, boolean vertical);
+
 }

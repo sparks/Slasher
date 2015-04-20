@@ -31,6 +31,10 @@ public class DotElementRenderer implements ElementRenderer {
 		return varA == varB;
 	}
 
+	public boolean isColorMatch(int varA, int varB, boolean vertical) {
+		return varA == varB;
+	}
+
 	public void render(Canvas canvas, int variation, ElementState.Mode mode, int left, int top, int right, int bottom) {
 		int colorIndex = variation;
 

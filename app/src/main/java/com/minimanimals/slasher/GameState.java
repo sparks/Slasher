@@ -19,6 +19,8 @@ public class GameState {
 
 	ScoreChangeListener mScoreChangeListener;
 
+	ElementState mFirstMatch;
+
 	public GameState(int cols, int rows, ElementRenderer elementRenderer) {
 		mRandom = new Random();
 
@@ -188,6 +190,8 @@ public class GameState {
 		mStartStrokePoint = null;
 		mEndStrokePoint = null;
 
+		mFirstMatch = null;
+
 		setElementStateMode(ElementState.Mode.NORMAL);
 	}
 
@@ -218,12 +222,10 @@ public class GameState {
 					ElementState below = mElementStates[x][yPivot-y-1];
 
 					if (mElementRenderer.isSymmetric(above.getVariation(), below.getVariation(), true)) {
+						if (mFirstMatch == null) mFirstMatch = above;
 						if (connectedSymm == 2) {
-							if (y > 0) {
-								ElementState prevAbove = mElementStates[x][yPivot+y-1];
-								if (!mElementRenderer.isSymmetric(prevAbove.getVariation(), below.getVariation(), true)) {
-									break;
-								}
+							if (!mElementRenderer.isColorMatch(mFirstMatch.getVariation(), below.getVariation(), true)) {
+								break;
 							}
 						}
 
@@ -248,12 +250,10 @@ public class GameState {
 					ElementState below = mElementStates[xPivot-x-1][y];
 
 					if (mElementRenderer.isSymmetric(above.getVariation(), below.getVariation(), true)) {
+						if (mFirstMatch == null) mFirstMatch = above;
 						if (connectedSymm == 2) {
-							if (x > 0) {
-								ElementState prevAbove = mElementStates[xPivot+x-1][y];
-								if (!mElementRenderer.isSymmetric(prevAbove.getVariation(), below.getVariation(), true)) {
-									break;
-								}
+							if (!mElementRenderer.isColorMatch(mFirstMatch.getVariation(), below.getVariation(), true)) {
+								break;
 							}
 						}
 

@@ -38,6 +38,10 @@ public class SlashElementRenderer implements ElementRenderer {
 		return (varA % 2) == 0 && varB == varA + 1;
 	}
 
+	public boolean isColorMatch(int varA, int varB, boolean vertical) {
+		return varA / 2 == varB / 2;
+	}
+
 	public void render(Canvas canvas, int variation, ElementState.Mode mode, int left, int top, int right, int bottom) {
 		boolean direction = (variation % 2) == 0;
 		int colorIndex = variation / 2;
